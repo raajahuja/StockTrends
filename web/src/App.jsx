@@ -427,6 +427,38 @@ function SectorBubbleChart({ sectors }) {
     </div>
   )
 }
+// ===========================
+// MOBILE CARD COMPONENT
+// ===========================
+function MobileTimelineCard({ item, date, onSelect, getChangeColor }) {
+  const val = item.history[date];
+  const hasData = val !== undefined;
+  const colorClass = hasData ? getChangeColor(val) : 'bg-stone-800 text-stone-500';
+
+  return (
+    <div onClick={() => onSelect(item)} className="bg-[#1c1917]/40 border border-white/5 p-4 rounded-xl flex justify-between items-center mb-3 active:scale-95 transition-transform shadow-sm">
+      <div className="flex gap-3 items-center">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${hasData && val >= 0 ? 'bg-emerald-500/10 text-emerald-400' : hasData ? 'bg-rose-500/10 text-rose-400' : 'bg-stone-800 text-stone-500'}`}>
+          {item.symbol[0]}
+        </div>
+        <div>
+          <div className="font-bold text-white text-base leading-none mb-1">{item.symbol}</div>
+          <div className="text-[10px] text-stone-500 uppercase tracking-wider font-bold">{item.name || 'Index'}</div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-end gap-1">
+        <div className={`px-3 py-1.5 rounded-lg text-sm font-bold font-mono tracking-tight shadow-lg ${colorClass}`}>
+          {hasData ? (val > 0 ? '+' : '') + val.toFixed(2) + '%' : '-'}
+        </div>
+        <div className="text-[10px] text-stone-600 font-mono">
+          Close: {item.close || item.currentPrice || 'N/A'}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TimelineView({ onStockClick }) {
   // Feature Flags - Moved to top
   const timelineIndicesEnabled = useFeatureFlag('timeline_indices');
@@ -880,251 +912,288 @@ function TimelineView({ onStockClick }) {
 
       {/* VIEW CONTENT */}
       {activeView === 'timeline' && timelineViewEnabled ? (
-        /* Matrix Grid */
-        <div className="flex-1 flex flex-col min-h-0 p-6">
-          {/* CONTROL BAR (Mockup) */}
-          <div className="flex justify-between items-center mb-4 flex-none">
-
-            <div className="flex gap-4 items-center">
-              {/* View Toggle (Moved from Bottom) */}
-              {enabledViews.length > 1 && (
-                <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
-                  <button onClick={() => setActiveView('timeline')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'timeline' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Timeline</button>
-                  <button onClick={() => setActiveView('snapshot')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'snapshot' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Snapshot</button>
-                </div>
-              )}
-
-              <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
-                {['Day', 'Week', 'Month', 'Quarter', 'Year'].map((tab) => (
-                  <button key={tab} onClick={() => setGroupBy(tab)} className={`px-5 py-0.5 h-7 flex items-center justify-center text-xs font-bold font-[family-name:var(--font-display)] rounded-md transition-all ${groupBy === tab ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
-              {/* Search Pill (Moved from Header) */}
-              <div className="relative group ml-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 group-hover:text-[var(--accent)] transition-colors opacity-70">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search indices..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="bg-[#1E293B] border border-slate-700/50 rounded-lg pl-9 pr-4 py-1.5 h-9 text-stone-300 text-xs font-bold font-[family-name:var(--font-display)] w-48 focus:outline-none focus:border-[var(--accent)] focus:w-64 transition-all flex items-center placeholder:font-normal"
-                />
-              </div>
+        <>
+          {/* MOBILE VIEW (CARD LIST) */}
+          <div className="md:hidden flex-1 flex flex-col min-h-0 p-4 pb-20 overflow-y-auto">
+            {/* Mobile Controls */}
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                placeholder="Search assets..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="bg-[#1E293B] border border-slate-700/50 rounded-lg px-4 py-2 w-full text-stone-200 text-sm font-bold focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
             </div>
 
-            <div className="flex gap-3">
-              {/* Category / Sector Filter */}
-              {(activeTab === 'equity' || activeTab === 'sectors') && (
-                <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9">
-                  <span className="opacity-70">Sector:</span>
-                  <select
-                    value={sectorFilter}
-                    onChange={e => setSectorFilter(e.target.value)}
-                    className="bg-transparent font-medium text-white focus:outline-none appearance-none pr-4 cursor-pointer"
-                  >
-                    {sectors.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
-                  </select>
-                  <span className="text-[10px] opacity-50 absolute right-2 pointer-events-none">▼</span>
-                </div>
-              )}
+            {/* Date Header */}
+            <div className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3 flex justify-between items-center">
+              <span>{groupBy} PERFORMANCE</span>
+              <span className="text-emerald-500">{groupedDates[0]}</span>
+            </div>
 
-              {activeTab === 'indices' && (
-                <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9 font-[family-name:var(--font-display)]">
-                  <span className="opacity-70 font-bold">Category:</span>
-                  <select
-                    value={indexCategoryFilter}
-                    onChange={e => setIndexCategoryFilter(e.target.value)}
-                    className="bg-transparent font-bold text-white focus:outline-none appearance-none pr-4 cursor-pointer"
-                  >
-                    {indexCategories.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
-                  </select>
-                  <span className="text-[10px] opacity-50 absolute right-2 pointer-events-none">▼</span>
-                </div>
+            <div className="space-y-1">
+              {groupedData.map(item => (
+                <MobileTimelineCard
+                  key={item.symbol}
+                  item={item}
+                  date={groupedDates[0]} // Always show latest date col
+                  onSelect={activeTab === 'equity' ? handleStockClick : () => { }}
+                  getChangeColor={getChangeColor}
+                />
+              ))}
+              {groupedData.length === 0 && (
+                <div className="text-center text-stone-500 py-10 opacity-50">No assets found</div>
               )}
             </div>
           </div>
 
-          <div
-            className="border border-[var(--border-subtle)] rounded-xl overflow-hidden bg-[var(--surface-base)] flex-1 flex flex-col relative"
-          >
-            <div
-              api-scroll="true"
-              className="flex-1 overflow-auto custom-scrollbar relative pb-0"
-              onScroll={(e) => {
-                // Debounce scroll events using requestAnimationFrame for 60fps
-                if (!scrollTicking.current) {
-                  window.requestAnimationFrame(() => {
-                    const { scrollLeft, scrollWidth, clientWidth } = e.target;
-                    const distanceFromEnd = scrollWidth - (scrollLeft + clientWidth);
+          {/* DESKTOP VIEW (MATRIX GRID) */}
+          <div className="hidden md:flex flex-1 flex-col min-h-0 p-6">
+            {/* CONTROL BAR (Mockup) */}
+            <div className="flex justify-between items-center mb-4 flex-none">
 
-                    const isAtEndOfMemory = groupedDates.length >= (processedData.dates?.length || 0);
-
-                    if (distanceFromEnd < 200 && !loading) {
-                      const maxDates = processedData.dates?.length || 0;
-                      if (visibleColumns < maxDates) {
-                        setVisibleColumns(prev => prev + 50);
-                      }
-                    }
-
-                    scrollTicking.current = false;
-                  });
-                  scrollTicking.current = true;
-                }
-              }}
-            >
-              <div className="min-w-max bg-[var(--surface-base)]">
-                {/* ... Header ... */}
-                <div className="flex sticky top-0 z-20 bg-[var(--surface-base)] border-b border-[var(--border-subtle)]">
-                  {/* ... */}
-                  <div
-                    className="p-4 pl-6 text-[13px] font-bold text-[var(--text-muted)] uppercase tracking-widest sticky left-0 z-30 bg-[var(--surface-base)] border-r border-[var(--border-subtle)] flex-none flex items-center group font-[family-name:var(--font-display)]"
-                    style={{ width: `${labelWidth}px`, height: '72px' }}
-                  >
-                    INDEX
+              <div className="flex gap-4 items-center">
+                {/* View Toggle (Moved from Bottom) */}
+                {enabledViews.length > 1 && (
+                  <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
+                    <button onClick={() => setActiveView('timeline')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'timeline' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Timeline</button>
+                    <button onClick={() => setActiveView('snapshot')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'snapshot' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Snapshot</button>
                   </div>
-                  {groupedDates.map((d, i) => {
-                    let topLabel = '';
-                    let bottomLabel = '';
+                )}
 
-                    if (groupBy === 'Day') {
-                      const dateObj = new Date(d);
-                      if (!isNaN(dateObj)) {
-                        topLabel = dateObj.getDate();
-                        bottomLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
-                      }
-                    } else if (groupBy === 'Week') {
-                      const [year, week] = d.split('-W');
-                      topLabel = `W${week}`;
-                      bottomLabel = year;
-                    } else if (groupBy === 'Month') {
-                      const [year, month] = d.split('-');
-                      const dateObj = new Date(year, parseInt(month) - 1);
-                      if (!isNaN(dateObj)) {
-                        topLabel = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-                        bottomLabel = year;
-                      }
-                    } else if (groupBy === 'Quarter') {
-                      const [year, q] = d.split('-');
-                      topLabel = q;
-                      bottomLabel = year;
-                    } else if (groupBy === 'Year') {
-                      topLabel = d;
-                      bottomLabel = '';
-                    }
-
-                    const isDayView = !groupBy || groupBy === 'Day';
-                    const isCurrentPeriod = getIsCurrentPeriod(d);
-                    const isHoliday = isDayView && isMarketClosed(d);
-                    const holidayName = isHoliday ? MARKET_HOLIDAYS[d] || 'Market Closed' : null;
-
-                    const hasData = groupedData.some(item => item.history[d] !== undefined);
-
-                    return (
-                      <div key={d} className="w-[100px] py-1 px-1 text-center border-r border-[var(--border-subtle)] flex-none cursor-default bg-[var(--surface-1)] flex flex-col justify-center items-center gap-1" style={{ height: '72px' }}>
-                        <span className={`text-[13px] font-bold font-[family-name:var(--font-display)] ${isCurrentPeriod ? 'text-white' : 'text-[var(--text-secondary)]'}`}>{topLabel}</span>
-                        <span className={`text-[10px] font-bold tracking-tight leading-[1.1] uppercase text-center w-full px-1 break-words ${isHoliday && MARKET_HOLIDAYS[d] ? 'text-amber-500/90' : 'text-[var(--text-muted)]'}`}>
-                          {isHoliday ? (holidayName === 'Market Closed' ? 'MARKET CLOSED' : holidayName) :
-                            (isCurrentPeriod && !hasData ? 'DATA ~4PM' : bottomLabel)}
-                        </span>
-                        {/* Sort Removed */}
-                      </div>
-                    );
-                  })}
-
-                  {/* LOAD MORE DATES COLUMN */}
-                  {groupedDates.length < totalDates && (
-                    <div className="w-[100px] flex-none border-r border-[var(--border-subtle)] bg-transparent border-l border-white/5 flex items-center justify-center cursor-pointer hover:bg-white/[0.05] transition-all group z-10"
-                      onClick={() => setVisibleColumns(prev => prev + 50)} style={{ height: '72px' }}>
-                      <div className="flex flex-col items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                        <span className="text-xl font-bold text-white group-hover:scale-110 transition-transform">→</span>
-                        <span className="text-[10px] text-white font-bold">LOAD MORE</span>
-                      </div>
-                    </div>
-                  )}
+                <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
+                  {['Day', 'Week', 'Month', 'Quarter', 'Year'].map((tab) => (
+                    <button key={tab} onClick={() => setGroupBy(tab)} className={`px-5 py-0.5 h-7 flex items-center justify-center text-xs font-bold font-[family-name:var(--font-display)] rounded-md transition-all ${groupBy === tab ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>
+                      {tab}
+                    </button>
+                  ))}
                 </div>
 
-                {/* ... Rows ... */}
-                <div className="bg-[var(--surface-base)]">
-                  {groupedData.map((item, i) => {
-                    // Visual Grouping: Add margin if category changes (Indices only)
-                    const prevItem = groupedData[i - 1];
-                    const isNewCategory = activeTab === 'indices' && i > 0 && item.category !== prevItem?.category;
-
-                    return (
-                      <div key={item.symbol} className={`flex hover:bg-white/[0.04] transition-colors duration-100 ease-out group border-b border-[#1E293B]/50 ${isNewCategory ? 'mt-8 border-t border-t-[#334155]/50' : ''}`}>
-                        {/* ... Symbol ... */}
-                        <div
-                          className={`p-0 pl-6 text-sm font-bold text-[var(--text-primary)] border-r border-[var(--border-subtle)] sticky left-0 z-10 bg-[var(--surface-base)] flex flex-col justify-center truncate flex-none transition-all duration-200 cursor-pointer`}
-                          style={{ width: `${labelWidth}px`, height: '56px' }}
-                          onClick={() => handleStockClick(item)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className={`${item.symbol === 'Nifty 50' ? 'text-white' : 'text-slate-300'} text-[13px] group-hover:text-[var(--accent)] transition-colors`}>{item.symbol}</span>
-                          </div>
-                        </div>
-                        {/* ... Cells ... */}
-                        {groupedDates.map((d, idx) => {
-                          const isDayView = !groupBy || groupBy === 'Day';
-                          const todayIST = getISTDateString();
-                          const isToday = isDayView && d === todayIST;
-                          const isCurrentPeriod = getIsCurrentPeriod(d);
-                          const isHoliday = isDayView && isMarketClosed(d);
-                          const val = item.history[d];
-                          const hasData = val !== undefined;
-                          const details = item.historyDetails?.[d];
-
-                          if (isDayView && !hasData) {
-                            return (
-                              <div key={d} className="w-[100px] border-r border-[var(--border-subtle)] flex-none flex items-center justify-center bg-white/[0.01]">
-                                <span className="text-[9px] font-bold text-slate-600 tracking-tighter uppercase text-center px-1">
-                                  {isCurrentPeriod ? (isHoliday ? 'Market opens next day' : 'Available @ 4PM') : '-'}
-                                </span>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div key={d} className={`w-[100px] flex-none border-r border-[var(--border-subtle)] p-[2px]`} style={{ height: '52px' }}>
-                              <div
-                                onClick={() => { if (groupBy === 'Day' && details) setSelectedCell({ symbol: item.symbol, date: d, details }); }}
-                                className={`w-full h-full flex items-center justify-center pr-0 rounded text-[13px] font-[family-name:var(--font-mono)] font-medium tabular-nums transition-all duration-200 ${isToday ? 'ring-1 ring-[var(--gain-2)]/30' : ''} ${hasData ? getChangeColor(val) : ''} ${details ? 'cursor-pointer hover:scale-[1.05] hover:shadow-lg hover:z-20 relative' : ''}`}
-                              >
-                                {hasData && <span className="mr-1 opacity-60 text-[10px] transform scale-100">{val > 0 ? '▲' : val < 0 ? '▼' : ''}</span>}
-                                {hasData ? (val > 0 ? '+' : '') + val.toFixed(2) + '%' : '-'}
-                              </div>
-                            </div>
-                          );
-                        })}
-
-                        {/* LOAD MORE PLACEHOLDER */}
-                        {groupedDates.length < (processedData.dates?.length || 0) && (
-                          <div className="w-[100px] flex-none border-r border-[var(--border-subtle)] bg-transparent hover:bg-white/[0.02] transition-colors cursor-pointer border-l border-white/5" style={{ height: '52px' }} onClick={() => setVisibleColumns(prev => prev + 50)}>
-                            <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 text-[var(--accent)] font-bold text-xs">+</div>
-                          </div>
-                        )}
-
-                      </div>
-                    );
-                  })}
+                {/* Search Pill (Moved from Header) */}
+                <div className="relative group ml-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 group-hover:text-[var(--accent)] transition-colors opacity-70">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search indices..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="bg-[#1E293B] border border-slate-700/50 rounded-lg pl-9 pr-4 py-1.5 h-9 text-stone-300 text-xs font-bold font-[family-name:var(--font-display)] w-48 focus:outline-none focus:border-[var(--accent)] focus:w-64 transition-all flex items-center placeholder:font-normal"
+                  />
                 </div>
+              </div>
 
-                {/* Inline Loading Indicator for Infinite Scroll */}
-                {isFetchingMore && (
-                  <div className="flex items-center justify-center p-8 bg-stone-900/50 border-t border-white/10">
-                    <Spinner size="md" />
-                    <span className="ml-3 text-sm text-stone-400">Loading more data...</span>
+              <div className="flex gap-3">
+                {/* Category / Sector Filter */}
+                {(activeTab === 'equity' || activeTab === 'sectors') && (
+                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9">
+                    <span className="opacity-70">Sector:</span>
+                    <select
+                      value={sectorFilter}
+                      onChange={e => setSectorFilter(e.target.value)}
+                      className="bg-transparent font-medium text-white focus:outline-none appearance-none pr-4 cursor-pointer"
+                    >
+                      {sectors.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
+                    </select>
+                    <span className="text-[10px] opacity-50 absolute right-2 pointer-events-none">▼</span>
+                  </div>
+                )}
+
+                {activeTab === 'indices' && (
+                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9 font-[family-name:var(--font-display)]">
+                    <span className="opacity-70 font-bold">Category:</span>
+                    <select
+                      value={indexCategoryFilter}
+                      onChange={e => setIndexCategoryFilter(e.target.value)}
+                      className="bg-transparent font-bold text-white focus:outline-none appearance-none pr-4 cursor-pointer"
+                    >
+                      {indexCategories.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
+                    </select>
+                    <span className="text-[10px] opacity-50 absolute right-2 pointer-events-none">▼</span>
                   </div>
                 )}
               </div>
             </div>
+
+            <div
+              className="border border-[var(--border-subtle)] rounded-xl overflow-hidden bg-[var(--surface-base)] flex-1 flex flex-col relative"
+            >
+              <div
+                api-scroll="true"
+                className="flex-1 overflow-auto custom-scrollbar relative pb-0"
+                onScroll={(e) => {
+                  // Debounce scroll events using requestAnimationFrame for 60fps
+                  if (!scrollTicking.current) {
+                    window.requestAnimationFrame(() => {
+                      const { scrollLeft, scrollWidth, clientWidth } = e.target;
+                      const distanceFromEnd = scrollWidth - (scrollLeft + clientWidth);
+
+                      const isAtEndOfMemory = groupedDates.length >= (processedData.dates?.length || 0);
+
+                      if (distanceFromEnd < 200 && !loading) {
+                        const maxDates = processedData.dates?.length || 0;
+                        if (visibleColumns < maxDates) {
+                          setVisibleColumns(prev => prev + 50);
+                        }
+                      }
+
+                      scrollTicking.current = false;
+                    });
+                    scrollTicking.current = true;
+                  }
+                }}
+              >
+                <div className="min-w-max bg-[var(--surface-base)]">
+                  {/* ... Header ... */}
+                  <div className="flex sticky top-0 z-20 bg-[var(--surface-base)] border-b border-[var(--border-subtle)]">
+                    {/* ... */}
+                    <div
+                      className="p-4 pl-6 text-[13px] font-bold text-[var(--text-muted)] uppercase tracking-widest sticky left-0 z-30 bg-[var(--surface-base)] border-r border-[var(--border-subtle)] flex-none flex items-center group font-[family-name:var(--font-display)]"
+                      style={{ width: `${labelWidth}px`, height: '72px' }}
+                    >
+                      INDEX
+                    </div>
+                    {groupedDates.map((d, i) => {
+                      let topLabel = '';
+                      let bottomLabel = '';
+
+                      if (groupBy === 'Day') {
+                        const dateObj = new Date(d);
+                        if (!isNaN(dateObj)) {
+                          topLabel = dateObj.getDate();
+                          bottomLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+                        }
+                      } else if (groupBy === 'Week') {
+                        const [year, week] = d.split('-W');
+                        topLabel = `W${week}`;
+                        bottomLabel = year;
+                      } else if (groupBy === 'Month') {
+                        const [year, month] = d.split('-');
+                        const dateObj = new Date(year, parseInt(month) - 1);
+                        if (!isNaN(dateObj)) {
+                          topLabel = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+                          bottomLabel = year;
+                        }
+                      } else if (groupBy === 'Quarter') {
+                        const [year, q] = d.split('-');
+                        topLabel = q;
+                        bottomLabel = year;
+                      } else if (groupBy === 'Year') {
+                        topLabel = d;
+                        bottomLabel = '';
+                      }
+
+                      const isDayView = !groupBy || groupBy === 'Day';
+                      const isCurrentPeriod = getIsCurrentPeriod(d);
+                      const isHoliday = isDayView && isMarketClosed(d);
+                      const holidayName = isHoliday ? MARKET_HOLIDAYS[d] || 'Market Closed' : null;
+
+                      const hasData = groupedData.some(item => item.history[d] !== undefined);
+
+                      return (
+                        <div key={d} className="w-[100px] py-1 px-1 text-center border-r border-[var(--border-subtle)] flex-none cursor-default bg-[var(--surface-1)] flex flex-col justify-center items-center gap-1" style={{ height: '72px' }}>
+                          <span className={`text-[13px] font-bold font-[family-name:var(--font-display)] ${isCurrentPeriod ? 'text-white' : 'text-[var(--text-secondary)]'}`}>{topLabel}</span>
+                          <span className={`text-[10px] font-bold tracking-tight leading-[1.1] uppercase text-center w-full px-1 break-words ${isHoliday && MARKET_HOLIDAYS[d] ? 'text-amber-500/90' : 'text-[var(--text-muted)]'}`}>
+                            {isHoliday ? (holidayName === 'Market Closed' ? 'MARKET CLOSED' : holidayName) :
+                              (isCurrentPeriod && !hasData ? 'DATA ~4PM' : bottomLabel)}
+                          </span>
+                          {/* Sort Removed */}
+                        </div>
+                      );
+                    })}
+
+                    {/* LOAD MORE DATES COLUMN */}
+                    {groupedDates.length < totalDates && (
+                      <div className="w-[100px] flex-none border-r border-[var(--border-subtle)] bg-transparent border-l border-white/5 flex items-center justify-center cursor-pointer hover:bg-white/[0.05] transition-all group z-10"
+                        onClick={() => setVisibleColumns(prev => prev + 50)} style={{ height: '72px' }}>
+                        <div className="flex flex-col items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                          <span className="text-xl font-bold text-white group-hover:scale-110 transition-transform">→</span>
+                          <span className="text-[10px] text-white font-bold">LOAD MORE</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ... Rows ... */}
+                  <div className="bg-[var(--surface-base)]">
+                    {groupedData.map((item, i) => {
+                      // Visual Grouping: Add margin if category changes (Indices only)
+                      const prevItem = groupedData[i - 1];
+                      const isNewCategory = activeTab === 'indices' && i > 0 && item.category !== prevItem?.category;
+
+                      return (
+                        <div key={item.symbol} className={`flex hover:bg-white/[0.04] transition-colors duration-100 ease-out group border-b border-[#1E293B]/50 ${isNewCategory ? 'mt-8 border-t border-t-[#334155]/50' : ''}`}>
+                          {/* ... Symbol ... */}
+                          <div
+                            className={`p-0 pl-6 text-sm font-bold text-[var(--text-primary)] border-r border-[var(--border-subtle)] sticky left-0 z-10 bg-[var(--surface-base)] flex flex-col justify-center truncate flex-none transition-all duration-200 cursor-pointer`}
+                            style={{ width: `${labelWidth}px`, height: '56px' }}
+                            onClick={() => handleStockClick(item)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={`${item.symbol === 'Nifty 50' ? 'text-white' : 'text-slate-300'} text-[13px] group-hover:text-[var(--accent)] transition-colors`}>{item.symbol}</span>
+                            </div>
+                          </div>
+                          {/* ... Cells ... */}
+                          {groupedDates.map((d, idx) => {
+                            const isDayView = !groupBy || groupBy === 'Day';
+                            const todayIST = getISTDateString();
+                            const isToday = isDayView && d === todayIST;
+                            const isCurrentPeriod = getIsCurrentPeriod(d);
+                            const isHoliday = isDayView && isMarketClosed(d);
+                            const val = item.history[d];
+                            const hasData = val !== undefined;
+                            const details = item.historyDetails?.[d];
+
+                            if (isDayView && !hasData) {
+                              return (
+                                <div key={d} className="w-[100px] border-r border-[var(--border-subtle)] flex-none flex items-center justify-center bg-white/[0.01]">
+                                  <span className="text-[9px] font-bold text-slate-600 tracking-tighter uppercase text-center px-1">
+                                    {isCurrentPeriod ? (isHoliday ? 'Market opens next day' : 'Available @ 4PM') : '-'}
+                                  </span>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div key={d} className={`w-[100px] flex-none border-r border-[var(--border-subtle)] p-[2px]`} style={{ height: '52px' }}>
+                                <div
+                                  onClick={() => { if (groupBy === 'Day' && details) setSelectedCell({ symbol: item.symbol, date: d, details }); }}
+                                  className={`w-full h-full flex items-center justify-center pr-0 rounded text-[13px] font-[family-name:var(--font-mono)] font-medium tabular-nums transition-all duration-200 ${isToday ? 'ring-1 ring-[var(--gain-2)]/30' : ''} ${hasData ? getChangeColor(val) : ''} ${details ? 'cursor-pointer hover:scale-[1.05] hover:shadow-lg hover:z-20 relative' : ''}`}
+                                >
+                                  {hasData && <span className="mr-1 opacity-60 text-[10px] transform scale-100">{val > 0 ? '▲' : val < 0 ? '▼' : ''}</span>}
+                                  {hasData ? (val > 0 ? '+' : '') + val.toFixed(2) + '%' : '-'}
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          {/* LOAD MORE PLACEHOLDER */}
+                          {groupedDates.length < (processedData.dates?.length || 0) && (
+                            <div className="w-[100px] flex-none border-r border-[var(--border-subtle)] bg-transparent hover:bg-white/[0.02] transition-colors cursor-pointer border-l border-white/5" style={{ height: '52px' }} onClick={() => setVisibleColumns(prev => prev + 50)}>
+                              <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 text-[var(--accent)] font-bold text-xs">+</div>
+                            </div>
+                          )}
+
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Inline Loading Indicator for Infinite Scroll */}
+                  {isFetchingMore && (
+                    <div className="flex items-center justify-center p-8 bg-stone-900/50 border-t border-white/10">
+                      <Spinner size="md" />
+                      <span className="ml-3 text-sm text-stone-400">Loading more data...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </>
 
 
       ) : activeView === 'snapshot' && snapshotViewEnabled && (
@@ -2045,6 +2114,34 @@ function WatchlistView({ stocks, watchlists, activeListName, onSelectList, onCre
 }
 
 // ===========================
+// MOBILE BOTTOM NAVIGATION
+// ===========================
+function MobileBottomNav({ activeMode, onSwitch }) {
+  const items = [
+    { id: 'snapshot', label: 'Snapshot', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+    { id: 'timeline', label: 'Timeline', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+    { id: 'watchlist', label: 'Watchlist', icon: 'M5 3a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h14v14H5V5zm6 4a1 1 0 100-2 1 1 0 000 2zm0 6a1 1 0 100-2 1 1 0 000 2zm4-6a1 1 0 100-2 1 1 0 000 2zm4 6a1 1 0 100 2 1 1 0 000-2z' }
+  ];
+
+  return (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#161413] border-t border-white/10 flex justify-around items-center z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+      {items.map(item => (
+        <button
+          key={item.id}
+          onClick={() => onSwitch(item.id)}
+          className={`flex flex-col items-center justify-center gap-1 w-full h-full active:scale-95 transition-transform ${activeMode === item.id ? 'text-emerald-400' : 'text-stone-500'}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={activeMode === item.id ? 2.5 : 2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+          </svg>
+          <span className="text-[10px] font-medium">{item.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ===========================
 // MAIN APP
 // ===========================
 function App() {
@@ -2154,10 +2251,10 @@ function App() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-  */
+      */
 
   const toggleWatchlist = (symbol) => {
     setWatchlists(prev => {
@@ -2270,19 +2367,19 @@ function App() {
     <div className="h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden font-[family-name:var(--font-body)] selection:bg-[var(--accent)]/30 flex flex-col">
 
       {/* RESTORED HEADER */}
-      <header className="h-16 flex flex-none items-center justify-between px-6 bg-[var(--surface-base)] border-b border-[var(--border-subtle)] z-50">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 relative overflow-hidden group transition-transform hover:scale-105">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white w-6 h-6 relative z-10">
+      <header className="h-14 md:h-16 flex flex-none items-center justify-between px-4 md:px-6 bg-[var(--surface-base)] border-b border-[var(--border-subtle)] z-50 transition-all">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 relative overflow-hidden group transition-transform hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white w-5 h-5 md:w-6 md:h-6 relative z-10">
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
                 <polyline points="16 7 22 7 22 13" />
               </svg>
               <div className="absolute inset-0 bg-white/10 blur-xl opacity-50 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="flex flex-col">
-              <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight text-white leading-none">BHAVCOPY<span className="text-[var(--accent)]">.live</span></span>
-              <span className="text-[10px] text-slate-500 font-bold tracking-[0.2em] mt-1 uppercase">Bazaar Bhav</span>
+              <span className="font-[family-name:var(--font-display)] font-bold text-lg md:text-xl tracking-tight text-white leading-none">BHAVCOPY<span className="text-[var(--accent)]">.live</span></span>
+              <span className="text-[9px] md:text-[10px] text-slate-500 font-bold tracking-[0.2em] mt-0.5 md:mt-1 uppercase">Bazaar Bhav</span>
             </div>
           </div>
         </div>
@@ -2292,10 +2389,10 @@ function App() {
         </div>
       </header>
 
-      {/* SUB-NAVIGATION (Only for Snapshot Mode) - Only show if > 1 sub-tab enabled */}
+      {/* SUB-NAVIGATION (Adapt for Mobile) */}
       {
         appMode === 'snapshot' && dailySnapshotEnabled && enabledSnapshotTabs.length > 1 && (
-          <div className="h-10 border-b border-white/5 bg-[#1c1917]/40 flex items-center justify-center gap-2">
+          <div className="h-12 md:h-10 border-b border-white/5 bg-[#1c1917]/40 flex items-center gap-2 px-4 md:px-0 md:justify-center overflow-x-auto no-scrollbar mask-linear-fade">
             {enabledSnapshotTabs.map(tab => (
               <button
                 key={tab}
@@ -2310,7 +2407,7 @@ function App() {
       }
 
       {/* MAIN CONTENT AREA */}
-      <main className="p-4 flex-1 overflow-hidden relative">
+      <main className="p-4 flex-1 overflow-hidden relative pb-20 md:pb-4">
         {appMode === 'timeline' && marketTimelineEnabled ? (
           <TimelineView onStockClick={handleStockClick} />
         ) : (appMode === 'watchlist' && watchlistEnabled) ? (
@@ -2366,6 +2463,8 @@ function App() {
       {/* Admin Panel Removed */}
       {/* <AdminPanel isOpen={isAdminMode} onClose={() => setIsAdminMode(false)} /> */}
 
+      {/* MOBILE BOTTOM NAVIGATION */}
+      <MobileBottomNav activeMode={appMode} onSwitch={setAppMode} />
     </div >
   );
 }
