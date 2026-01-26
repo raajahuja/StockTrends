@@ -4,7 +4,7 @@ import './App.css'
 import { useFeatureFlag } from './contexts/FeatureFlagContext'
 import Spinner from './components/Spinner'
 import SkeletonLoader from './components/SkeletonLoader'
-import { MobileTimeTravelView } from './components/MobileTimeTravelView'; // Import the new mobile view
+import { MobileDashboardView } from './components/MobileDashboardView'; // Import the new mobile dashboard
 import { isMarketClosed, getISTDateString, MARKET_HOLIDAYS } from './utils/marketHolidays';
 
 const API_BASE_URL = window.location.hostname === 'localhost'
@@ -914,9 +914,9 @@ function TimelineView({ onStockClick }) {
       {/* VIEW CONTENT */}
       {activeView === 'timeline' && timelineViewEnabled ? (
         <>
-          {/* MOBILE VIEW (TIME TRAVEL SLIDER) */}
-          <div className="md:hidden flex-1 min-h-0 bg-[#1c1917]">
-            <MobileTimeTravelView
+          {/* MOBILE VIEW (CARD DASHBOARD) */}
+          <div className="md:hidden flex-1 min-h-0 bg-[#131110]">
+            <MobileDashboardView
               groupedData={groupedData}
               groupedDates={groupedDates}
               onStockClick={activeTab === 'equity' ? handleStockClick : () => { }}
