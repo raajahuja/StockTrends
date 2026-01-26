@@ -913,88 +913,54 @@ function TimelineView({ onStockClick }) {
       {/* VIEW CONTENT */}
       {activeView === 'timeline' && timelineViewEnabled ? (
         <>
-          {/* MOBILE VIEW (CARD LIST) */}
-          <div className="md:hidden flex-1 flex flex-col min-h-0 p-4 pb-20 overflow-y-auto">
-            {/* Mobile Controls */}
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                placeholder="Search assets..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="bg-[#1E293B] border border-slate-700/50 rounded-lg px-4 py-2 w-full text-stone-200 text-sm font-bold focus:outline-none focus:border-[var(--accent)] transition-all"
-              />
-            </div>
+          {/* UNIFIED MATRIX VIEW (ALL SCREENS) */}
+          <div className="flex flex-col flex-1 min-h-0 p-4 md:p-6 overflow-hidden">
+            {/* CONTROL BAR */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 flex-none">
 
-            {/* Date Header */}
-            <div className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3 flex justify-between items-center">
-              <span>{groupBy} PERFORMANCE</span>
-              <span className="text-emerald-500">{groupedDates[0]}</span>
-            </div>
-
-            <div className="space-y-1">
-              {groupedData.map(item => (
-                <MobileTimelineCard
-                  key={item.symbol}
-                  item={item}
-                  date={groupedDates[0]} // Always show latest date col
-                  onSelect={activeTab === 'equity' ? handleStockClick : () => { }}
-                  getChangeColor={getChangeColor}
-                />
-              ))}
-              {groupedData.length === 0 && (
-                <div className="text-center text-stone-500 py-10 opacity-50">No assets found</div>
-              )}
-            </div>
-          </div>
-
-          {/* DESKTOP VIEW (MATRIX GRID) */}
-          <div className="hidden md:flex flex-1 flex-col min-h-0 p-6">
-            {/* CONTROL BAR (Mockup) */}
-            <div className="flex justify-between items-center mb-4 flex-none">
-
-              <div className="flex gap-4 items-center">
-                {/* View Toggle (Moved from Bottom) */}
+              <div className="flex flex-wrap gap-2 md:gap-4 items-center w-full md:w-auto">
+                {/* View Toggle */}
                 {enabledViews.length > 1 && (
                   <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
-                    <button onClick={() => setActiveView('timeline')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'timeline' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Timeline</button>
-                    <button onClick={() => setActiveView('snapshot')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'snapshot' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Snapshot</button>
+                    <button onClick={() => setActiveView('timeline')} className={`px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'timeline' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Timeline</button>
+                    <button onClick={() => setActiveView('snapshot')} className={`px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeView === 'snapshot' ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Snapshot</button>
                   </div>
                 )}
 
-                <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center">
+                {/* Group By Tabs - Scrollable on mobile */}
+                <div className="flex bg-[#1E293B] p-1 rounded-lg h-9 items-center overflow-x-auto no-scrollbar max-w-[200px] md:max-w-none">
                   {['Day', 'Week', 'Month', 'Quarter', 'Year'].map((tab) => (
-                    <button key={tab} onClick={() => setGroupBy(tab)} className={`px-5 py-0.5 h-7 flex items-center justify-center text-xs font-bold font-[family-name:var(--font-display)] rounded-md transition-all ${groupBy === tab ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>
+                    <button key={tab} onClick={() => setGroupBy(tab)} className={`px-3 md:px-5 py-0.5 h-7 flex items-center justify-center text-xs font-bold font-[family-name:var(--font-display)] rounded-md transition-all whitespace-nowrap ${groupBy === tab ? 'bg-[var(--surface-3)] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                {/* Search Pill (Moved from Header) */}
-                <div className="relative group ml-2">
+                {/* Search Pill */}
+                <div className="relative group flex-1 md:flex-none min-w-[120px]">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 group-hover:text-[var(--accent)] transition-colors opacity-70">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
                   <input
                     type="text"
-                    placeholder="Search indices..."
+                    placeholder="Search..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="bg-[#1E293B] border border-slate-700/50 rounded-lg pl-9 pr-4 py-1.5 h-9 text-stone-300 text-xs font-bold font-[family-name:var(--font-display)] w-48 focus:outline-none focus:border-[var(--accent)] focus:w-64 transition-all flex items-center placeholder:font-normal"
+                    className="bg-[#1E293B] border border-slate-700/50 rounded-lg pl-9 pr-4 py-1.5 h-9 text-stone-300 text-xs font-bold font-[family-name:var(--font-display)] w-full md:w-48 focus:outline-none focus:border-[var(--accent)] md:focus:w-64 transition-all flex items-center placeholder:font-normal"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 w-full md:w-auto justify-end">
                 {/* Category / Sector Filter */}
                 {(activeTab === 'equity' || activeTab === 'sectors') && (
-                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9">
-                    <span className="opacity-70">Sector:</span>
+                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9 w-full md:w-auto">
+                    <span className="opacity-70 whitespace-nowrap">Sector:</span>
                     <select
                       value={sectorFilter}
                       onChange={e => setSectorFilter(e.target.value)}
-                      className="bg-transparent font-medium text-white focus:outline-none appearance-none pr-4 cursor-pointer"
+                      className="bg-transparent font-medium text-white focus:outline-none appearance-none pr-4 cursor-pointer w-full"
                     >
                       {sectors.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
                     </select>
@@ -1003,12 +969,12 @@ function TimelineView({ onStockClick }) {
                 )}
 
                 {activeTab === 'indices' && (
-                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9 font-[family-name:var(--font-display)]">
-                    <span className="opacity-70 font-bold">Category:</span>
+                  <div className="flex items-center gap-2 px-3 bg-[#1E293B] hover:bg-[#2D3748] rounded-lg text-xs text-slate-300 border border-slate-700/50 transition-colors relative h-9 font-[family-name:var(--font-display)] w-full md:w-auto">
+                    <span className="opacity-70 font-bold whitespace-nowrap">Category:</span>
                     <select
                       value={indexCategoryFilter}
                       onChange={e => setIndexCategoryFilter(e.target.value)}
-                      className="bg-transparent font-bold text-white focus:outline-none appearance-none pr-4 cursor-pointer"
+                      className="bg-transparent font-bold text-white focus:outline-none appearance-none pr-4 cursor-pointer w-full"
                     >
                       {indexCategories.map(s => <option key={s} value={s} className="bg-[#1E293B] text-slate-300">{s}</option>)}
                     </select>
@@ -1048,11 +1014,11 @@ function TimelineView({ onStockClick }) {
               >
                 <div className="min-w-max bg-[var(--surface-base)]">
                   {/* ... Header ... */}
-                  <div className="flex sticky top-0 z-20 bg-[var(--surface-base)] border-b border-[var(--border-subtle)]">
+                  <div className="flex sticky top-0 z-20 bg-[var(--surface-base)] border-b border-[var(--border-subtle)] shadow-md">
                     {/* ... */}
                     <div
-                      className="p-4 pl-6 text-[13px] font-bold text-[var(--text-muted)] uppercase tracking-widest sticky left-0 z-30 bg-[var(--surface-base)] border-r border-[var(--border-subtle)] flex-none flex items-center group font-[family-name:var(--font-display)]"
-                      style={{ width: `${labelWidth}px`, height: '72px' }}
+                      className="p-4 pl-4 md:pl-6 text-[13px] font-bold text-[var(--text-muted)] uppercase tracking-widest sticky left-0 z-30 bg-[var(--surface-base)] border-r border-[var(--border-subtle)] flex-none flex items-center group font-[family-name:var(--font-display)] shadow-[4px_0_8px_rgba(0,0,0,0.2)]"
+                      style={{ width: `${Math.min(labelWidth, window.innerWidth < 768 ? 160 : 400)}px`, height: '72px' }}
                     >
                       INDEX
                     </div>
@@ -1128,12 +1094,12 @@ function TimelineView({ onStockClick }) {
                         <div key={item.symbol} className={`flex hover:bg-white/[0.04] transition-colors duration-100 ease-out group border-b border-[#1E293B]/50 ${isNewCategory ? 'mt-8 border-t border-t-[#334155]/50' : ''}`}>
                           {/* ... Symbol ... */}
                           <div
-                            className={`p-0 pl-6 text-sm font-bold text-[var(--text-primary)] border-r border-[var(--border-subtle)] sticky left-0 z-10 bg-[var(--surface-base)] flex flex-col justify-center truncate flex-none transition-all duration-200 cursor-pointer`}
-                            style={{ width: `${labelWidth}px`, height: '56px' }}
+                            className={`p-0 pl-4 md:pl-6 text-sm font-bold text-[var(--text-primary)] border-r border-[var(--border-subtle)] sticky left-0 z-10 bg-[var(--surface-base)] flex flex-col justify-center truncate flex-none transition-all duration-200 cursor-pointer shadow-[4px_0_8px_rgba(0,0,0,0.2)]`}
+                            style={{ width: `${Math.min(labelWidth, window.innerWidth < 768 ? 160 : 400)}px`, height: '56px' }}
                             onClick={() => handleStockClick(item)}
                           >
                             <div className="flex items-center gap-3">
-                              <span className={`${item.symbol === 'Nifty 50' ? 'text-white' : 'text-slate-300'} text-[13px] group-hover:text-[var(--accent)] transition-colors`}>{item.symbol}</span>
+                              <span className={`${item.symbol === 'Nifty 50' ? 'text-white' : 'text-slate-300'} text-[13px] group-hover:text-[var(--accent)] transition-colors truncate`}>{item.symbol}</span>
                             </div>
                           </div>
                           {/* ... Cells ... */}
