@@ -16,6 +16,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
+
+      - name: Reset to Origin Main
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -53,6 +59,7 @@ jobs:
         with:
           commit_message: "chore: daily data update [skip ci]"
           file_pattern: 'data/stocks.db data/.processed indices_data/**'
+          branch: main 
 
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
