@@ -143,7 +143,7 @@ export function MobileDashboardView({ groupedData, groupedDates, onStockClick, g
                     <IndexPerformanceCard
                         key={item.symbol}
                         item={item}
-                        dataPoints={getDataPoints(item)}
+                        historyDates={getDataPoints(item)}
                         onSelect={onStockClick}
                         getChangeColor={getChangeColor}
                     />
