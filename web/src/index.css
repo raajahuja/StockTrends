@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  /* Typography */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  font-family: var(--font-body);
+  line-height: 1.5;
+  color-scheme: dark;
+
+  /* Surfaces */
+  --surface-base: #0a0e14;
+  --surface-1: #0f1419;
+  --surface-2: #1a1f2e;
+  --surface-3: #252d3d;
+
+  --bg-primary: var(--surface-1);
+  --bg-secondary: var(--surface-2);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.1);
+
+  /* Heatmap Scale (10-Step Semantic) */
+  --gain-1: #34d399;
+  /* Strong Gain */
+  --gain-2: #10b981;
+  --gain-3: #059669;
+  --gain-4: #047857;
+  --gain-5: #064e3b;
+  /* Subtle Gain */
+
+  --loss-1: #f87171;
+  /* Strong Loss */
+  --loss-2: #dc2626;
+  --loss-3: #b91c1c;
+  --loss-4: #7f1d1d;
+  --loss-5: #450a0a;
+  /* Subtle Loss */
+
+  /* Text Colors */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #6366f1;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Tabular Numbers for Clean Tables */
+.tabular-nums {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0E1117;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1F2937;
+  border-radius: 4px;
+  border: 1px solid #0E1117;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}

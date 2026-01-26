@@ -1,0 +1,176 @@
+module.exports = {
+    // ISO Date Format: YYYY-MM-DD
+
+    // ==================== 2017 ====================
+    '2017-01-26': 'Republic Day',
+    '2017-02-24': 'Mahashivratri',
+    '2017-03-13': 'Holi',
+    '2017-04-04': 'Ram Navami',
+    '2017-04-09': 'Mahavir Jayanti',
+    '2017-04-14': 'Dr. Baba Saheb Ambedkar Jayanti/Good Friday',
+    '2017-05-01': 'Maharashtra Day',
+    '2017-06-26': 'Id-Ul-Fitr (Ramzan Id)',
+    '2017-08-15': 'Independence Day',
+    '2017-08-25': 'Ganesh Chaturthi',
+    '2017-09-02': 'Bakri Id',
+    '2017-10-02': 'Mahatma Gandhi Jayanti',
+    '2017-10-19': 'Dussehra/Diwali Laxmi Pujan', // Muhurat Trading
+    '2017-10-20': 'Diwali-Balipratipada',
+    '2017-12-25': 'Christmas',
+
+    // ==================== 2018 ====================
+    '2018-01-26': 'Republic Day',
+    '2018-02-13': 'Mahashivratri',
+    '2018-03-02': 'Holi',
+    '2018-03-29': 'Mahavir Jayanti',
+    '2018-03-30': 'Good Friday',
+    '2018-05-01': 'Maharashtra Day',
+    '2018-06-15': 'Id-Ul-Fitr (Ramzan Id)',
+    '2018-08-15': 'Independence Day',
+    '2018-08-22': 'Bakri Id',
+    '2018-09-13': 'Ganesh Chaturthi',
+    '2018-09-20': 'Muharram',
+    '2018-10-02': 'Mahatma Gandhi Jayanti',
+    '2018-10-18': 'Dussehra',
+    '2018-11-07': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2018-11-08': 'Diwali-Balipratipada',
+    '2018-11-23': 'Gurunanak Jayanti',
+    '2018-12-25': 'Christmas',
+
+    // ==================== 2019 ====================
+    '2019-03-04': 'Mahashivratri',
+    '2019-03-21': 'Holi',
+    '2019-04-17': 'Ram Navami/Mahavir Jayanti',
+    '2019-04-19': 'Good Friday',
+    '2019-05-01': 'Maharashtra Day',
+    '2019-06-05': 'Id-Ul-Fitr (Ramzan Id)',
+    '2019-08-12': 'Bakri Id',
+    '2019-08-15': 'Independence Day',
+    '2019-09-02': 'Ganesh Chaturthi',
+    '2019-09-10': 'Muharram',
+    '2019-10-02': 'Mahatma Gandhi Jayanti',
+    '2019-10-08': 'Dussehra',
+    '2019-10-21': 'Assembly Elections in Maharashtra',
+    '2019-10-27': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2019-10-28': 'Diwali-Balipratipada',
+    '2019-11-12': 'Gurunanak Jayanti',
+    '2019-12-25': 'Christmas',
+
+    // ==================== 2020 ====================
+    '2020-02-21': 'Mahashivratri',
+    '2020-03-10': 'Holi',
+    '2020-04-02': 'Ram Navami',
+    '2020-04-06': 'Mahavir Jayanti',
+    '2020-04-10': 'Good Friday',
+    '2020-04-14': 'Dr. Baba Saheb Ambedkar Jayanti',
+    '2020-05-01': 'Maharashtra Day',
+    '2020-05-25': 'Id-Ul-Fitr (Ramzan Id)',
+    '2020-08-03': 'Bakri Id',
+    '2020-08-15': 'Independence Day',
+    '2020-08-22': 'Ganesh Chaturthi',
+    '2020-10-02': 'Mahatma Gandhi Jayanti',
+    '2020-10-25': 'Dussehra',
+    '2020-11-14': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2020-11-16': 'Diwali-Balipratipada',
+    '2020-11-30': 'Gurunanak Jayanti',
+    '2020-12-25': 'Christmas',
+
+    // ==================== 2021 ====================
+    '2021-01-26': 'Republic Day',
+    '2021-03-11': 'Mahashivratri',
+    '2021-03-29': 'Holi',
+    '2021-04-02': 'Good Friday',
+    '2021-04-14': 'Dr. Babasaheb Ambedkar Jayanti',
+    '2021-04-21': 'Ram Navami',
+    '2021-05-13': 'Eid-Ul-Fitr (Ramzan Id)',
+    '2021-07-21': 'Bakri Id',
+    '2021-08-19': 'Muharram',
+    '2021-09-10': 'Ganesh Chaturthi',
+    '2021-10-15': 'Dussehra',
+    '2021-11-04': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2021-11-05': 'Diwali-Balipratipada',
+    '2021-11-19': 'Guru Nanak Jayanti',
+
+    // ==================== 2022 ====================
+    '2022-01-26': 'Republic Day',
+    '2022-03-01': 'Mahashivratri',
+    '2022-03-18': 'Holi',
+    '2022-04-14': 'Dr. Baba Saheb Ambedkar Jayanti/Mahavir Jayanti',
+    '2022-04-15': 'Good Friday',
+    '2022-05-03': 'Id-Ul-Fitr (Ramzan Id)',
+    '2022-08-09': 'Muharram',
+    '2022-08-15': 'Independence Day',
+    '2022-08-31': 'Ganesh Chaturthi',
+    '2022-10-05': 'Dussehra',
+    '2022-10-24': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2022-10-26': 'Diwali-Balipratipada',
+    '2022-11-08': 'Gurunanak Jayanti',
+
+    // ==================== 2023 ====================
+    '2023-01-26': 'Republic Day',
+    '2023-03-07': 'Holi',
+    '2023-03-30': 'Ram Navami',
+    '2023-04-04': 'Mahavir Jayanti',
+    '2023-04-07': 'Good Friday',
+    '2023-04-14': 'Dr. Baba Saheb Ambedkar Jayanti',
+    '2023-05-01': 'Maharashtra Day',
+    '2023-06-28': 'Bakri Id',
+    '2023-08-15': 'Independence Day',
+    '2023-09-19': 'Ganesh Chaturthi',
+    '2023-10-02': 'Mahatma Gandhi Jayanti',
+    '2023-10-24': 'Dussehra',
+    '2023-11-14': 'Diwali-Balipratipada',
+    '2023-11-27': 'Gurunanak Jayanti',
+    '2023-12-25': 'Christmas',
+
+    // ==================== 2024 ====================
+    '2024-01-26': 'Republic Day',
+    '2024-03-08': 'Mahashivratri',
+    '2024-03-25': 'Holi',
+    '2024-03-29': 'Good Friday',
+    '2024-04-11': 'Id-Ul-Fitr (Ramadan Eid)',
+    '2024-04-17': 'Ram Navami',
+    '2024-05-01': 'Maharashtra Day',
+    '2024-06-17': 'Bakri Id',
+    '2024-07-17': 'Muharram',
+    '2024-08-15': 'Independence Day',
+    '2024-10-02': 'Mahatma Gandhi Jayanti',
+    '2024-11-01': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2024-11-15': 'Gurunanak Jayanti',
+    '2024-12-25': 'Christmas',
+
+    // ==================== 2025 ====================
+    '2025-02-26': 'Mahashivratri',
+    '2025-03-14': 'Holi',
+    '2025-03-31': 'Id-Ul-Fitr (Ramadan Eid)',
+    '2025-04-10': 'Mahavir Jayanti',
+    '2025-04-14': 'Dr. Baba Saheb Ambedkar Jayanti',
+    '2025-04-18': 'Good Friday',
+    '2025-05-01': 'Maharashtra Day',
+    '2025-08-15': 'Independence Day',
+    '2025-08-27': 'Ganesh Chaturthi',
+    '2025-10-02': 'Mahatma Gandhi Jayanti/Dussehra',
+    '2025-10-21': 'Diwali Laxmi Pujan', // Muhurat Trading
+    '2025-10-22': 'Diwali-Balipratipada',
+    '2025-11-05': 'Gurunanak Jayanti',
+    '2025-12-25': 'Christmas',
+
+    // ==================== 2026 ====================
+    '2026-01-26': 'Republic Day',
+    '2026-03-03': 'Holi',
+    '2026-03-26': 'Ram Navami',
+    '2026-03-31': 'Mahavir Jayanti',
+    '2026-04-03': 'Good Friday',
+    '2026-04-14': 'Ambedkar Jayanti',
+    '2026-05-01': 'Maharashtra Day',
+    '2026-05-28': 'Bakri Id',
+    '2026-06-26': 'Muharram',
+    '2026-08-15': 'Independence Day', // Saturday (Already Weekend)
+    '2026-09-14': 'Ganesh Chaturthi',
+    '2026-10-02': 'Gandhi Jayanti',
+    '2026-10-20': 'Dussehra',
+    '2026-11-08': 'Diwali Laxmi Pujan (Sun)', // Sunday (Special Trading)
+    '2026-11-10': 'Diwali Balipratipada',
+    '2026-11-24': 'Gurunanak Jayanti',
+    '2026-12-25': 'Christmas'
+};

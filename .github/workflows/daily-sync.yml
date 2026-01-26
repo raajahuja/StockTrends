@@ -1,0 +1,60 @@
+name: Daily Market Data Sync
+
+on:
+  schedule:
+    - cron: '30 14 * * *' # 8:00 PM IST (14:30 UTC)
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push data back to repo
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm install
+
+      - name: Install Web Dependencies
+        run: cd web && npm install
+
+      - name: Download New Indices
+        run: node download-indices.js auto
+
+      - name: Sync Indices to Database
+        run: node sync-indices.js
+
+      - name: Sync Stocks CSVs
+        run: node sync-csv.js
+
+      - name: Export Static JSON
+        run: node export-static.js
+
+      - name: Commit and Push Updated Data
+        run: |
+          git config --global user.name "MarketBot [Bot]"
+          git config --global user.email "marketbot@bhavcopy.live"
+          git add data/stocks.db indices_data/ web/public/api/
+          git diff --staged --quiet || git commit -m "📊 Daily Market Sync: $(date +'%Y-%m-%d')"
+          git push
+
+      - name: Build Web App
+        run: cd web && npm run build
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANVESHA_E455E }}'
+          projectId: anvesha-e455e
+          channelId: live
