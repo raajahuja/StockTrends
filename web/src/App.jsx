@@ -1339,14 +1339,35 @@ function StockModal({ stock, onClose, isWatchlisted, onToggleWatchlist }) {
 
   useEffect(() => {
     if (stock) {
+      // In production static environment, we don't have per-stock detail endpoints.
+      // We will skip this fetch and rely on the data already loaded in the main app if available.
+      if (API_BASE_URL === '/api') {
+        // If we want to support this, we'd need to pre-generate these files.
+        // For now, prevent the fetch that causes SyntaxError.
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
-      fetch(`${API_BASE_URL}/stocks/${stock.symbol}`)
-        .then(res => res.json())
+      const url = `${API_BASE_URL}/stocks/${stock.symbol}.json`; // Try to use .json even if not guarded
+
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error('Not found');
+          const contentType = res.headers.get("content-type");
+          if (!contentType || contentType.indexOf("application/json") === -1) {
+            throw new Error("Not JSON");
+          }
+          return res.json();
+        })
         .then(data => {
           if (data.success && data.data.history) setHistory(data.data.history);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch(() => {
+          // Fallback: If stock detail fails (expected in static-prod), just stop loading
+          setLoading(false);
+        });
     }
   }, [stock]);
 
@@ -2275,33 +2296,69 @@ function App() {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/dates`)
-      .then(res => res.json())
+    fetch(`${API_BASE_URL}/dates.json`)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const contentType = res.headers.get("content-type");
+        if (!contentType || contentType.indexOf("application/json") === -1) {
+          throw new Error("Response was not JSON (likely HTML 404)");
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success && data.data.length > 0) {
           setDates(data.data);
           setSelectedDate(data.data[0]);
         }
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error("Failed to load dates.json:", err);
+      });
   }, []);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        const dateQuery = selectedDate ? `?date=${selectedDate}` : '';
+        // In production static environment, we don't have per-date stock/category snapshots available as individual files.
+        // We fallback to checking indices-snapshot.json or indices-timeline.json for the active data.
+        // For the main table view, we'll try to load indices-snapshot.json
+
+        let stockUrl = `${API_BASE_URL}/stocks.json`;
+        let catUrl = `${API_BASE_URL}/categories.json`;
+
+        // Check if we are in production static mode
+        if (API_BASE_URL === '/api') {
+          // Mapping to what we actually have in export-static.js
+          stockUrl = `${API_BASE_URL}/indices-snapshot.json`; // Fallback for indices
+          catUrl = `${API_BASE_URL}/indices-snapshot.json`;  // Fallback
+        } else {
+          const dateQuery = selectedDate ? `?date=${selectedDate}` : '';
+          stockUrl = `${API_BASE_URL}/stocks${dateQuery}`;
+          catUrl = `${API_BASE_URL}/categories${dateQuery}`;
+        }
+
         const [stockRes, catRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/stocks${dateQuery}`),
-          fetch(`${API_BASE_URL}/categories${dateQuery}`)
+          fetch(stockUrl),
+          fetch(catUrl)
         ]);
 
-        const stockData = await stockRes.json();
-        const catData = await catRes.json();
+        const decodeSafe = async (res, name) => {
+          if (!res.ok) throw new Error(`${name} fetch failed: ${res.status}`);
+          const contentType = res.headers.get("content-type");
+          if (!contentType || contentType.indexOf("application/json") === -1) {
+            throw new Error(`${name} response is not JSON`);
+          }
+          return await res.json();
+        };
+
+        const stockData = await decodeSafe(stockRes, "Stocks");
+        const catData = await decodeSafe(catRes, "Categories");
 
         if (stockData.success) {
-          setStocks(stockData.data);
-          setCategories(catData.data);
+          // Note: If using indices-snapshot, data is in .data
+          setStocks(stockData.data || {});
+          setCategories(catData.data || {});
         } else {
           setStocks({});
           setCategories({});
