@@ -35,14 +35,14 @@ async function exportStatic() {
         fs.writeFileSync(path.join(EXPORT_DIR, 'indices-snapshot.json'), JSON.stringify({ success: true, data: snapshot }));
 
         // 4. Export Indices Timeline (ALL HISTORY)
-        // We fetching a large number to ensure we get everything
+        // We fetching 5000 days to ensure we get everything back to 2014
         console.log('📈 Exporting indices timeline (all history)...');
-        const indicesTimeline = getIndicesTimeline(2000, 0);
+        const indicesTimeline = getIndicesTimeline(5000, 0);
         fs.writeFileSync(path.join(EXPORT_DIR, 'indices-timeline.json'), JSON.stringify({ success: true, data: indicesTimeline }));
 
         // 5. Export Stocks Timeline (ALL HISTORY)
         console.log('🏢 Exporting stocks timeline (all history)...');
-        const stocksTimeline = getTimelineData(2000, 0);
+        const stocksTimeline = getTimelineData(5000, 0);
         fs.writeFileSync(path.join(EXPORT_DIR, 'stocks-timeline.json'), JSON.stringify({ success: true, data: stocksTimeline }));
 
         console.log(`✅ Export complete! Files saved to: ${EXPORT_DIR}`);
