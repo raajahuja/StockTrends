@@ -7,8 +7,8 @@ const path = require('path');
 const DB_PATH = path.join(__dirname, 'data', 'stocks.db');
 const db = new Database(DB_PATH);
 
-// Enable WAL mode for better performance
-db.pragma('journal_mode = WAL');
+// Disable WAL mode for Git stability (otherwise -wal and -shm files conflict)
+db.pragma('journal_mode = DELETE');
 
 // ===========================
 // IN-MEMORY CACHE (For Static History)

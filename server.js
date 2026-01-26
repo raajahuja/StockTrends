@@ -5,6 +5,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const {
     getAllStocks,
     getAllDates,
@@ -23,6 +24,9 @@ const PORT = 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static JSON files for localhost development (Static Migration support)
+app.use('/api', express.static(path.join(__dirname, 'web', 'public', 'api')));
 
 // ===========================
 // API ROUTES
