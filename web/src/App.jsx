@@ -5,7 +5,6 @@ import { useFeatureFlag } from './contexts/FeatureFlagContext'
 import Spinner from './components/Spinner'
 import SkeletonLoader from './components/SkeletonLoader'
 import { MobileTimeTravelView } from './components/MobileTimeTravelView'; // Import the new mobile view
-import { MobileTimelineCard } from './components/MobileTimelineCard'; // Keep for reference or fallback if needed
 import { isMarketClosed, getISTDateString, MARKET_HOLIDAYS } from './utils/marketHolidays';
 
 const API_BASE_URL = window.location.hostname === 'localhost'
