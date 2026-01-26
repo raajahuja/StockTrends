@@ -9,7 +9,7 @@ import { isMarketClosed, getISTDateString, MARKET_HOLIDAYS } from './utils/marke
 
 const API_BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3001/api'
-  : '/api';
+  : '/api'; // In production (Firebase), this maps to web/public/api folder containing static JSONs
 
 // ===========================
 // UTILITY FUNCTIONS (Modern SaaS Pastel Scale)
