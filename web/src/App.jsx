@@ -2343,7 +2343,7 @@ function App() {
       </main>
 
       <footer className="border-t border-white/5 bg-[#0a0e14] py-4 px-6 flex flex-col md:flex-row items-center justify-between text-[10px] text-stone-500 font-medium tracking-wide gap-2">
-        <span>Data Updates daily at 3.45PM (Except Indian Market Holidays)</span>
+        <span>Data Updates daily at 8PM (Except Indian Market Holidays)</span>
         <div className="flex items-center gap-4">
           <span>Made with ❤️ in India</span>
           <span>© {new Date().getFullYear()} BhavCopy.live™</span>
