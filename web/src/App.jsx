@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import './App.css'
-import AdminPanel from './components/AdminPanel'
+// import AdminPanel from './components/AdminPanel'
 import { useFeatureFlag } from './contexts/FeatureFlagContext'
 import Spinner from './components/Spinner'
 import SkeletonLoader from './components/SkeletonLoader'
@@ -447,7 +447,7 @@ function TimelineView({ onStockClick }) {
   const enabledViews = useMemo(() => {
     const views = [];
     if (timelineViewEnabled) views.push('timeline');
-    if (snapshotViewEnabled) views.push('snapshot');
+    // if (snapshotViewEnabled) views.push('snapshot');
     return views;
   }, [timelineViewEnabled, snapshotViewEnabled]);
 
@@ -2144,7 +2144,8 @@ function App() {
     localStorage.setItem('gaia_watchlists', JSON.stringify(toSave));
   }, [watchlists]);
 
-  // Keyboard shortcut for admin mode (Ctrl+Shift+A or Cmd+Shift+A)
+  // Keyboard shortcut removed as per request
+  /*
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
@@ -2156,6 +2157,7 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+  */
 
   const toggleWatchlist = (symbol) => {
     setWatchlists(prev => {
@@ -2286,7 +2288,7 @@ function App() {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="bg-[var(--accent)] hover:bg-indigo-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-indigo-500/20">Sign In</button>
+          {/* Sign In Removed */}
         </div>
       </header>
 
@@ -2361,7 +2363,8 @@ function App() {
       }
 
       {/* Admin Panel */}
-      <AdminPanel isOpen={isAdminMode} onClose={() => setIsAdminMode(false)} />
+      {/* Admin Panel Removed */}
+      {/* <AdminPanel isOpen={isAdminMode} onClose={() => setIsAdminMode(false)} /> */}
 
     </div >
   );
