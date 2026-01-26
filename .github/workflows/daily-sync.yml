@@ -1,15 +1,16 @@
-name: Daily Market Data Sync
+name: Daily Data Sync & Deploy
 
 on:
   schedule:
-    - cron: '30 14 * * *' # 8:00 PM IST (14:30 UTC)
-  workflow_dispatch: # Allows manual trigger
+    - cron: '30 14 * * *' # 14:30 UTC = 8:00 PM IST
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
-  update-data:
+  sync-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed to push data back to repo
+      contents: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -26,35 +27,36 @@ jobs:
         run: npm install
 
       - name: Install Web Dependencies
-        run: cd web && npm install
+        run: |
+          cd web
+          npm install
 
-      - name: Download New Indices
+      - name: Download Latest Indices
         run: node download-indices.js auto
 
       - name: Sync Indices to Database
         run: node sync-indices.js
 
-      - name: Sync Stocks CSVs
+      - name: Sync CSV Bhavcopies
         run: node sync-csv.js
 
-      - name: Export Static JSON
+      - name: Export Static JSON Data
         run: node export-static.js
 
-      - name: Commit and Push Updated Data
+      - name: Build Web Application
         run: |
-          git config --global user.name "MarketBot [Bot]"
-          git config --global user.email "marketbot@bhavcopy.live"
-          git add data/stocks.db indices_data/ web/public/api/
-          git diff --staged --quiet || git commit -m "📊 Daily Market Sync: $(date +'%Y-%m-%d')"
-          git push
+          cd web
+          npm run build
 
-      - name: Build Web App
-        run: cd web && npm run build
+      - name: Commit and Push Database Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: daily data update [skip ci]"
+          file_pattern: 'data/stocks.db data/.processed indices_data/**'
 
       - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+        uses: w9jds/firebase-action@master
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANVESHA_E455E }}'
-          projectId: anvesha-e455e
-          channelId: live
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
