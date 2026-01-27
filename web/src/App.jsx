@@ -545,9 +545,10 @@ function TimelineView({ onStockClick }) {
     setIsInitialLoad(true);
 
     try {
+      const v = API_BASE_URL === '/api' ? `?v=${Date.now()}` : '';
       const [stockRes, indexRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/stocks-timeline.json`).then(res => res.json()),
-        fetch(`${API_BASE_URL}/indices-timeline.json`).then(res => res.json())
+        fetch(`${API_BASE_URL}/stocks-timeline.json${v}`).then(res => res.json()),
+        fetch(`${API_BASE_URL}/indices-timeline.json${v}`).then(res => res.json())
       ]);
 
       // Process Stock Data
@@ -597,7 +598,8 @@ function TimelineView({ onStockClick }) {
   // Fetch Snapshot Data
   const fetchSnapshotData = () => {
     setLoading(true);
-    fetch(`${API_BASE_URL}/indices-snapshot.json`)
+    const v = API_BASE_URL === '/api' ? `?v=${Date.now()}` : '';
+    fetch(`${API_BASE_URL}/indices-snapshot.json${v}`)
       .then(res => res.json())
       .then(res => {
         if (res.success) {
@@ -2343,9 +2345,10 @@ function App() {
           catUrl = `${API_BASE_URL}/categories${dateQuery}`;
         }
 
+        const v = API_BASE_URL === '/api' ? `?v=${Date.now()}` : '';
         const [stockRes, catRes] = await Promise.all([
-          fetch(stockUrl),
-          fetch(catUrl)
+          fetch(`${stockUrl}${v}`),
+          fetch(`${catUrl}${v}`)
         ]);
 
         const decodeSafe = async (res, name) => {
