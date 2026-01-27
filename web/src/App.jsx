@@ -1077,7 +1077,7 @@ function TimelineView({ onStockClick }) {
                           <span className={`text-[13px] font-bold font-[family-name:var(--font-display)] ${isCurrentPeriod ? 'text-white' : 'text-[var(--text-secondary)]'}`}>{topLabel}</span>
                           <span className={`text-[10px] font-bold tracking-tight leading-[1.1] uppercase text-center w-full px-1 break-words ${isHoliday && MARKET_HOLIDAYS[d] ? 'text-amber-500/90' : 'text-[var(--text-muted)]'}`}>
                             {isHoliday ? (holidayName === 'Market Closed' ? 'MARKET CLOSED' : holidayName) :
-                              (isCurrentPeriod && !hasData ? 'DATA ~4PM' : bottomLabel)}
+                              (isCurrentPeriod && !hasData ? 'DATA ~9PM' : bottomLabel)}
                           </span>
                           {/* Sort Removed */}
                         </div>
@@ -1130,7 +1130,7 @@ function TimelineView({ onStockClick }) {
                               return (
                                 <div key={d} className="w-[100px] border-r border-[var(--border-subtle)] flex-none flex items-center justify-center bg-white/[0.01]">
                                   <span className="text-[9px] font-bold text-slate-600 tracking-tighter uppercase text-center px-1">
-                                    {isCurrentPeriod ? (isHoliday ? 'Market opens next day' : 'Available @ 4PM') : '-'}
+                                    {isCurrentPeriod ? (isHoliday ? 'Market opens next day' : 'Available @ 9PM') : '-'}
                                   </span>
                                 </div>
                               );
@@ -2482,7 +2482,7 @@ function App() {
       </main>
 
       <footer className="border-t border-white/5 bg-[#0a0e14] py-4 px-6 flex flex-col md:flex-row items-center justify-between text-[10px] text-stone-500 font-medium tracking-wide gap-2">
-        <span>Data Updates daily at 8PM (Except Indian Market Holidays)</span>
+        <span>Data Updates daily at 9PM (Except Indian Market Holidays)</span>
         <div className="flex items-center gap-4">
           <span>Made with ❤️ in India</span>
           <span>© {new Date().getFullYear()} BhavCopy.live™</span>
