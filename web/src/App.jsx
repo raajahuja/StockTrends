@@ -2296,7 +2296,12 @@ function App() {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/dates.json`)
+    // Add cache buster to ensure we always get the latest available dates
+    const url = API_BASE_URL === '/api'
+      ? `${API_BASE_URL}/dates.json?v=${Date.now()}`
+      : `${API_BASE_URL}/dates.json`;
+
+    fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const contentType = res.headers.get("content-type");
