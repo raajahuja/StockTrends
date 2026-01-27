@@ -103,12 +103,20 @@ const insertIndexData = db.prepare(`
 // Get all unique dates
 
 const getAllDates = db.prepare(`
-  SELECT DISTINCT date FROM daily_data ORDER BY date DESC
+  SELECT DISTINCT date FROM (
+    SELECT date FROM daily_data
+    UNION
+    SELECT date FROM indices
+  ) ORDER BY date DESC
 `);
 
 // Get latest date
 const getLatestDate = db.prepare(`
-  SELECT MAX(date) as date FROM daily_data
+  SELECT MAX(date) as date FROM (
+    SELECT date FROM daily_data
+    UNION 
+    SELECT date FROM indices
+  )
 `);
 
 // Get all stocks for a specific date (or latest if null)
@@ -181,12 +189,17 @@ const getStocksBySubSector = (subSector, date = null) => {
 
 // Get database stats
 const getStats = db.prepare(`
+  WITH AllDates AS (
+    SELECT date FROM daily_data
+    UNION
+    SELECT date FROM indices
+  )
   SELECT 
     (SELECT COUNT(*) FROM stocks) as totalStocks,
     (SELECT COUNT(DISTINCT sub_sector) FROM stocks) as totalCategories,
-    (SELECT COUNT(DISTINCT date) FROM daily_data) as totalDays,
-    (SELECT MIN(date) FROM daily_data) as firstDate,
-    (SELECT MAX(date) FROM daily_data) as lastDate
+    (SELECT COUNT(DISTINCT date) FROM AllDates) as totalDays,
+    (SELECT MIN(date) FROM AllDates) as firstDate,
+    (SELECT MAX(date) FROM AllDates) as lastDate
 `);
 
 // Helper to compute Rank Map (Symbol -> Category)
